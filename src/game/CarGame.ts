@@ -1,117 +1,203 @@
+// CarGame.ts
 import Phaser from 'phaser';
 
-class CarGameScene extends Phaser.Scene {
-  private car!: Phaser.Physics.Arcade.Sprite;
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private speed = 0;
-  private maxSpeed = 200;
-  private acceleration = 300;
-  private drag = 100;
+// Game configuration
+const scene = {
+  preload: function(this: Phaser.Scene) {
+    // Load all game assets
+    this.load.image('car', 'assets/Razor.png');
+    this.load.image('coin', 'assets/coin.png');
+    this.load.image('background', 'assets/background.png');
+    
+    ['obstacle1', 'obstacle2', 'obstacle3', 'obstacle4'].forEach((obstacle) => {
+      this.load.image(obstacle, `assets/${obstacle}.png`);
+    });
+  },
+  create: function(this: Phaser.Scene) {
+    // Game world size (larger than visible area)
+    const gameSize = { width: 1600, height: 1200 };
+    
+    // Set physics parameters in scene data
+    this.data.set('acceleration', 10);
+    this.data.set('deceleration', 25);
+    this.data.set('maxSpeed', 500);
+    this.data.set('reverseSpeed', 150);
 
-  constructor() {
-    super({ key: 'CarGameScene' });
-  }
+    // Set up game world
+    this.physics.world.setBounds(0, 0, gameSize.width, gameSize.height);
+    this.add.tileSprite(0, 0, gameSize.width, gameSize.height, 'background')
+      .setOrigin(0, 0);
 
-  preload() {
-    // Create simple colored rectangles as sprites
-    this.add.graphics()
-      .fillStyle(0x4F46E5)
-      .fillRect(0, 0, 40, 20)
-      .generateTexture('car', 40, 20);
-
-    this.add.graphics()
-      .fillStyle(0x10B981)
-      .fillRect(0, 0, 20, 20)
-      .generateTexture('obstacle', 20, 20);
-
-    this.add.graphics()
-      .fillStyle(0xF59E0B)
-      .fillRect(0, 0, 15, 15)
-      .generateTexture('coin', 15, 15);
-  }
-
-  create() {
-    // Create car
-    this.car = this.physics.add.sprite(400, 300, 'car');
-    this.car.setCollideWorldBounds(true);
-    this.car.setDrag(this.drag);
-    this.car.setMaxVelocity(this.maxSpeed);
-
-    // Create some obstacles
-    const obstacles = this.physics.add.staticGroup();
-    for (let i = 0; i < 5; i++) {
-      const x = Phaser.Math.Between(100, 700);
-      const y = Phaser.Math.Between(100, 500);
-      obstacles.create(x, y, 'obstacle');
+    // Create player car
+    const car = this.physics.add.sprite(
+      gameSize.width / 2, 
+      gameSize.height / 2, 
+      'car'
+    );
+    
+    car.setCollideWorldBounds(true)
+       .setDrag(0.2) // Increased drag for better coasting
+       .setMaxVelocity(this.data.get('maxSpeed'));
+    
+    if (car.body) {
+      car.body.setSize(40, 20).setOffset(10, 10);
     }
 
-    // Create collectible coins
+    // Setup camera
+    this.cameras.main
+      .setBounds(0, 0, gameSize.width, gameSize.height)
+      .startFollow(car)
+      .setZoom(0.8);
+
+    // Create coins
     const coins = this.physics.add.group();
-    for (let i = 0; i < 8; i++) {
-      const x = Phaser.Math.Between(50, 750);
-      const y = Phaser.Math.Between(50, 550);
-      coins.create(x, y, 'coin');
-    }
-
-    // Enable cursor keys
-    this.cursors = this.input.keyboard!.createCursorKeys();
-
-    // Collision detection
-    this.physics.add.collider(this.car, obstacles, () => {
-      // Simple bounce effect
-      this.car.setVelocity(this.car.body!.velocity.x * -0.5, this.car.body!.velocity.y * -0.5);
-    });
-
-    this.physics.add.overlap(this.car, coins, (car, coin) => {
-      (coin as Phaser.Physics.Arcade.Sprite).destroy();
-    });
-
-    // Add instructions
-    this.add.text(10, 10, 'Use Arrow Keys to Control the Car', {
-      fontSize: '16px',
-      color: '#1F2937'
-    });
-
-    this.add.text(10, 35, 'Collect yellow coins, avoid green obstacles!', {
-      fontSize: '14px',
-      color: '#6B7280'
-    });
-  }
-
-  update() {
-    // Handle input
-    if (this.cursors.up.isDown) {
-      this.physics.velocityFromRotation(this.car.rotation, this.maxSpeed, this.car.body!.velocity);
-    } else if (this.cursors.down.isDown) {
-      this.physics.velocityFromRotation(this.car.rotation, -this.maxSpeed * 0.5, this.car.body!.velocity);
-    }
-
-    if (this.cursors.left.isDown) {
-      this.car.setAngularVelocity(-200);
-    } else if (this.cursors.right.isDown) {
-      this.car.setAngularVelocity(200);
-    } else {
-      this.car.setAngularVelocity(0);
-    }
-  }
-}
-
-export const initGame = (parent: HTMLElement): Phaser.Game => {
-  const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 400,
-    parent: parent,
-    backgroundColor: '#E0F2FE',
-    physics: {
-      default: 'arcade',
-      arcade: {
-        gravity: { x: 0, y: 0 },
-        debug: false
+    for (let i = 0; i < 20; i++) {
+      const coin = coins.create(
+        Phaser.Math.Between(50, gameSize.width - 50),
+        Phaser.Math.Between(50, gameSize.height - 50),
+        'coin'
+      ).setScale(0.05);
+      if (coin.body) {
+        coin.body.setCircle(15);
       }
-    },
-    scene: CarGameScene
-  };
+    }
 
+    // Create obstacles
+    const obstacles = this.physics.add.staticGroup();
+    for (let i = 0; i < 15; i++) {
+      const obstacle = obstacles.create(
+        Phaser.Math.Between(50, gameSize.width - 50),
+        Phaser.Math.Between(50, gameSize.height - 50),
+        `obstacle${Phaser.Math.Between(1, 4)}`
+      ).setScale(1);
+      if (obstacle.body) {
+        obstacle.body.setSize(obstacle.width * 0.7, obstacle.height * 0.7);
+      }
+    }
+
+    // Set up controls
+    const cursors = this.input.keyboard?.createCursorKeys();
+
+    // Score text
+    const scoreText = this.add.text(16, 16, 'Score: 0', {
+      fontSize: '32px',
+      color: '#000',
+      backgroundColor: '#fff',
+      padding: { x: 10, y: 5 }
+    }).setScrollFactor(0);
+
+    // Collision handlers
+    this.physics.add.collider(car, obstacles);
+    
+    this.physics.add.overlap(
+      car,
+      coins,
+      (_, coin) => {
+        (coin as Phaser.Physics.Arcade.Sprite).disableBody(true, true);
+        scoreText.setText(`Score: ${parseInt(scoreText.text.split(' ')[1]) + 10}`);
+        
+        this.time.delayedCall(5000, () => {
+          if (coins.getLength() < 20) {
+            (coin as Phaser.Physics.Arcade.Sprite).enableBody(
+              true,
+              Phaser.Math.Between(50, gameSize.width - 50),
+              Phaser.Math.Between(50, gameSize.height - 50),
+              true,
+              true
+            );
+          }
+        });
+      },
+      undefined,
+      this
+    );
+
+    // Store references in scene data
+    this.data.set('car', car);
+    this.data.set('cursors', cursors);
+    this.data.set('scoreText', scoreText);
+  },
+  update: function(this: Phaser.Scene) {
+      const car = this.data.get('car') as Phaser.Physics.Arcade.Sprite;
+      const cursors = this.data.get('cursors') as Phaser.Types.Input.Keyboard.CursorKeys;
+      const acceleration = this.data.get('acceleration');
+      const deceleration = this.data.get('deceleration');
+      const maxSpeed = this.data.get('maxSpeed');
+      const reverseSpeed = this.data.get('reverseSpeed');
+    
+      if (!car || !cursors || !car.body) return;
+    
+      // Type guard to ensure we have a dynamic body
+      if (!(car.body instanceof Phaser.Physics.Arcade.Body)) return;
+    
+      // Steering
+      const currentSpeed = Math.sqrt(car.body.velocity.x ** 2 + car.body.velocity.y ** 2);
+      const maxTurningSpeed = 200; // degrees/sec at 0 speed
+      const minTurningSpeed = 100;  // degrees/sec at max speed
+      const speedRatio = Math.min(currentSpeed / maxSpeed, 1);
+      const minSpeedForTurning = 5; // threshold to consider the car as 'moving'
+      let effectiveTurningSpeed = 0;
+      if (currentSpeed > minSpeedForTurning) {
+        effectiveTurningSpeed = maxTurningSpeed * (1 - speedRatio) + minTurningSpeed * speedRatio;
+      }
+
+      if (cursors.left.isDown) {
+        car.setAngularVelocity(-effectiveTurningSpeed);
+      } else if (cursors.right.isDown) {
+        car.setAngularVelocity(effectiveTurningSpeed);
+      } else {
+        car.setAngularVelocity(0);
+      }
+    
+      // IMPROVED ACCELERATION SYSTEM
+      if (cursors.up.isDown) {
+        // Accelerate forward
+        this.physics.velocityFromRotation(
+          car.rotation,
+          Math.min(currentSpeed + acceleration, maxSpeed),
+          car.body.velocity
+        );
+      } else if (cursors.down.isDown) {
+        // Brake or reverse
+        this.physics.velocityFromRotation(
+          car.rotation,
+          Math.max(currentSpeed - deceleration, -reverseSpeed),
+          car.body.velocity
+        );
+      } else {
+        // Natural deceleration when no keys pressed
+        if (currentSpeed > 0) {
+          this.physics.velocityFromRotation(
+            car.rotation,
+            Math.max(currentSpeed - deceleration/2, 0),
+            car.body.velocity
+          );
+        } else if (currentSpeed < 0) {
+          this.physics.velocityFromRotation(
+            car.rotation,
+            Math.min(currentSpeed + deceleration/2, 0),
+            car.body.velocity
+          );
+        }
+      }
+  }
+};
+
+const config: Phaser.Types.Core.GameConfig = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { x: 0, y: 0 },
+      debug: false
+    }
+  },
+  scene
+};
+
+export const initGame = (parent: HTMLDivElement): Phaser.Game => {
+  config.parent = parent;
   return new Phaser.Game(config);
 };

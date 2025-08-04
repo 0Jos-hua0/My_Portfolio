@@ -54,18 +54,12 @@ const GameSection = () => {
                 ref={gameRef}
                 className="w-full h-96 flex items-center justify-center bg-gradient-to-b from-sky-200 to-green-200"
               >
-                <div className="text-center text-slate-600">
-                  <Gamepad2 size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>Loading Phaser.js Game...</p>
-                </div>
+                
               </div>
             </div>
 
             <div className="mt-6 text-center">
-              <p className="text-slate-600 text-sm">
-                This mini-game showcases real-time physics, input handling, and game development skills 
-                using modern web technologies.
-              </p>
+              
             </div>
           </div>
         </div>

@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Mail, Github, Linkedin, Twitter, Send, MapPin, Phone } from 'lucide-react';
 
+interface FormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 const Contact = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     subject: '',
@@ -10,16 +17,36 @@ const Contact = () => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission here
+    
+    try {
+      const response = await fetch("/.netlify/functions/sendEmail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          'form-name': 'contact' // Required for Netlify Forms
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      alert("Message sent successfully!");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert(error instanceof Error ? error.message : "Failed to send message");
+    }
   };
 
   return (
@@ -56,7 +83,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-slate-800">Email</p>
-                  <p className="text-slate-600">your.email@example.com</p>
+                  <p className="text-slate-600">joshuagigofnaf@gmail.com</p>
                 </div>
               </div>
 
@@ -66,7 +93,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-slate-800">Phone</p>
-                  <p className="text-slate-600">+1 (555) 123-4567</p>
+                  <p className="text-slate-600">+91 93610 24976</p>
                 </div>
               </div>
 
@@ -76,7 +103,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <p className="font-medium text-slate-800">Location</p>
-                  <p className="text-slate-600">San Francisco, CA</p>
+                  <p className="text-slate-600">Chennai, Tamil Nadu, India</p>
                 </div>
               </div>
             </div>
@@ -89,6 +116,7 @@ const Contact = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:transform hover:scale-105"
+                  aria-label="GitHub"
                 >
                   <Github className="text-slate-700" size={20} />
                 </a>
@@ -97,6 +125,7 @@ const Contact = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:transform hover:scale-105"
+                  aria-label="LinkedIn"
                 >
                   <Linkedin className="text-slate-700" size={20} />
                 </a>
@@ -105,12 +134,14 @@ const Contact = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:transform hover:scale-105"
+                  aria-label="Twitter"
                 >
                   <Twitter className="text-slate-700" size={20} />
                 </a>
                 <a 
-                  href="mailto:your.email@example.com"
+                  href="mailto:joshuagigofnaf@gmail.com"
                   className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all hover:transform hover:scale-105"
+                  aria-label="Email"
                 >
                   <Mail className="text-slate-700" size={20} />
                 </a>
@@ -120,7 +151,14 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form 
+              onSubmit={handleSubmit}
+              name="contact"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+              className="space-y-6"
+            >
+              <input type="hidden" name="form-name" value="contact" />
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
@@ -183,12 +221,13 @@ const Contact = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                   placeholder="Tell me about your project or opportunity..."
-                ></textarea>
+                />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:transform hover:scale-105 hover:shadow-xl flex items-center justify-center space-x-2"
+                aria-label="Send message"
               >
                 <span>Send Message</span>
                 <Send size={20} />

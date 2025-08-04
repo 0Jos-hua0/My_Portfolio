@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@keyframes lineMove {
+    0% {
+      transform: translateY(100vh) scaleX(0.5);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100vh) scaleX(0.5);
+      opacity: 0;
+    }
+  }
+  
+  .animate-line {
+    animation: lineMove 3s linear infinite;
+  }
+  

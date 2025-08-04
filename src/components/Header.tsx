@@ -40,7 +40,7 @@ const Header = () => {
     { id: 'hero', label: 'Home' },
     { id: 'about', label: 'About' },
     { id: 'projects', label: 'Projects' },
-    { id: 'game', label: 'Game' },
+    { id: 'game', label: 'Bored?' },
     { id: 'contact', label: 'Contact' }
   ];
 
@@ -48,12 +48,17 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-sm z-50 transition-all duration-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          <div 
-            className="text-xl font-bold text-slate-800 cursor-pointer hover:text-blue-600 transition-colors"
-            onClick={() => scrollToSection('hero')}
-          >
-            ML Portfolio
-          </div>
+        <div 
+  className="cursor-pointer hover:opacity-80 active:opacity-70 transition-opacity
+  flex items-center h-10 py-2"
+  onClick={() => scrollToSection('hero')}
+>
+  <img 
+    src="/assets/logo.png" 
+    alt="ML Portfolio Logo" 
+    className="h-16 w-auto" // Adjust height as needed
+  />
+</div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
