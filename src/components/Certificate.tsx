@@ -72,7 +72,7 @@ const CertificateCarousel: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const speed = 0.3;
+  const speed = 0.1;
 
   const handleDownload = (url: string) => {
     console.log('Downloading:', url);
@@ -123,7 +123,7 @@ const CertificateCarousel: React.FC = () => {
 
   return (
     <section className="py-16 bg-gradient-to-r from-blue-50 to-purple-50">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 ">
         <div className="flex justify-between items-center mb-6 relative">
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <div className="relative inline-block">
@@ -138,12 +138,12 @@ const CertificateCarousel: React.FC = () => {
                   delay: 0.4, 
                   ease: [0.22, 1, 0.36, 1] 
                 }}
-                className="absolute bottom-[-12px] left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-blue-500 transform origin-left"
+                className="absolute bottom-[-12px] left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-blue-500 transform origin-left "
               />
             </div>
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 ">
             <span className="text-sm text-slate-600 hidden md:inline">
               Pause to scroll manually
             </span>
@@ -159,7 +159,7 @@ const CertificateCarousel: React.FC = () => {
         
         <div 
           ref={containerRef}
-          className="relative h-72 overflow-x-auto"
+          className="relative h-72 overflow-x-auto "
           style={{
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
@@ -172,7 +172,7 @@ const CertificateCarousel: React.FC = () => {
             }
           </style>
           
-          <div className="flex gap-8 w-max">
+          <div className="flex gap-8 w-max ">
             {[...certificates, ...certificates].map((cert, index) => (
               <motion.div
                 key={`${cert.id}-${index}`}
@@ -180,7 +180,7 @@ const CertificateCarousel: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 opacity-80  " />
                 <div className="relative z-10 h-full flex flex-col items-center justify-center p-6">
                   <h3 className="text-lg font-semibold text-center text-slate-800 mb-2">
                     {cert.title}
