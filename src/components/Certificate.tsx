@@ -14,6 +14,57 @@ const certificates: Certificate[] = [
     title: 'Machine Learning Certification',
     downloadUrl: '/certificates/ml-cert.pdf'
   },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  {
+    id: '1',
+    title: 'Machine Learning Certification',
+    downloadUrl: '/certificates/ml-cert.pdf'
+  },
+  
   // ... other certificates
 ];
 
