@@ -49,14 +49,17 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
         <div 
-  className="cursor-pointer hover:opacity-80 active:opacity-70 transition-opacity
+  className="cursor-pointer hover:opacity-80 active:opacity-70 transition-all duration-300
   flex items-center h-10 py-2"
   onClick={() => scrollToSection('hero')}
 >
   <img 
-    src="/assets/logo.png" 
+    src="./assets/logo.png" 
     alt="ML Portfolio Logo" 
-    className="h-16 w-auto" // Adjust height as needed
+    className="h-16 w-auto 
+      hover:drop-shadow-[0_0_12px_rgba(168,85,247,0.7)]  // Purple glow (Tailwind CSS 3.2+)
+      active:drop-shadow-[0_0_12px_rgba(249,115,22,0.7)] // Orange glow
+      transition-all duration-200"
   />
 </div>
 

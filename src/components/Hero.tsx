@@ -18,7 +18,7 @@ const Hero = () => {
     <section
   id="hero"
   className="min-h-screen flex items-center justify-center bg-cover bg-center text-white relative overflow-hidden"
-  style={{ backgroundImage: `url('/assets/herobg.jpeg')` }}
+  style={{ backgroundImage: `url('./assets/herobg.jpeg')` }}
 >
 
 <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
@@ -65,7 +65,7 @@ const Hero = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <a 
-          href="/assets/Resume.pdf"
+          href="./assets/Resume.pdf"
           download="Resume.pdf"
           rel="noopener noreferrer"
           className="bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:transform hover:scale-105 hover:shadow-xl flex items-center space-x-2">

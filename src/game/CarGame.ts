@@ -5,12 +5,12 @@ import Phaser from 'phaser';
 const scene = {
   preload: function(this: Phaser.Scene) {
     // Load all game assets
-    this.load.image('car', 'assets/Razor.png');
-    this.load.image('coin', 'assets/coin.png');
-    this.load.image('background', 'assets/background.png');
+    this.load.image('car', './assets/Razor.png');
+    this.load.image('coin', './assets/coin.png');
+    this.load.image('background', './assets/Background.png');
     
     ['obstacle1', 'obstacle2', 'obstacle3', 'obstacle4'].forEach((obstacle) => {
-      this.load.image(obstacle, `assets/${obstacle}.png`);
+      this.load.image(obstacle, `./assets/${obstacle}.jpg`);
     });
   },
   create: function(this: Phaser.Scene) {

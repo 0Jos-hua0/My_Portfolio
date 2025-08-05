@@ -3,7 +3,7 @@ import { Brain, Database, Building2, Gamepad2, } from 'lucide-react';
 import { motion, useInView, useAnimation , AnimatePresence, Variants} from "framer-motion";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import profilePic from '../../assets/pf.png';
+import profilePic from '/assets/pf.png';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
