@@ -60,7 +60,7 @@ export class GameEngine {
     this.car = {
       x: canvas.width / 2 - 30,
       y: canvas.height / 2 - 20,
-      width: 60,
+      width: 65,
       height: 40,
       speed: 3,
       image: null,
@@ -85,7 +85,19 @@ export class GameEngine {
       'car3': '/assets/Razor2.png'
     };
     this.car.image.src = carImageMap[this.car.selectedCarId] || '/assets/Razor.png';
-
+    this.car.image.onload = () => {
+      const targetHeight = 40; // desired car height
+      const aspectRatio = this.car.image.width / this.car.image.height;
+      const targetWidth = targetHeight * aspectRatio;
+  
+      // Update car size to scaled dimensions
+      this.car.width = targetWidth;
+      this.car.height = targetHeight;
+  
+      // (Optional) Centering again after knowing dimensions
+      this.car.x = this.canvas.width / 2 - this.car.width / 2;
+      this.car.y = this.canvas.height / 2 - this.car.height / 2;    
+    };
     // Load coin image
     this.coinImage = new Image();
     this.coinImage.src = '/assets/coin.png';
@@ -236,13 +248,24 @@ export class GameEngine {
     const acceleration = 0.3;
     const friction = 0.95;
     const maxSpeed = 4;
-    const turnSpeed = 0.08;
+    
+    // Calculate current speed for dynamic turn rate
+    let currentSpeed = Math.sqrt(this.car.velocity.x ** 2 + this.car.velocity.y ** 2);
+    const speedRatio = currentSpeed / maxSpeed;
+    
+    // Dynamic turn speed: higher speed = less turning ability (more realistic)
+    const baseTurnSpeed = 0.08;
+    const turnSpeed = baseTurnSpeed * (1 - speedRatio * 0.6); // Reduce turning at high speed
+    
+    // Only allow turning if car is moving forward
+    const isMovingForward = this.keys['ArrowUp'] || this.keys['KeyW'];
+    const canTurn = currentSpeed > 0.5 || isMovingForward;
 
-    // Handle turning
-    if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
+    // Handle turning (only when moving or accelerating)
+    if (canTurn && (this.keys['ArrowLeft'] || this.keys['KeyA'])) {
       this.car.angle -= turnSpeed;
     }
-    if (this.keys['ArrowRight'] || this.keys['KeyD']) {
+    if (canTurn && (this.keys['ArrowRight'] || this.keys['KeyD'])) {
       this.car.angle += turnSpeed;
     }
 
@@ -261,7 +284,7 @@ export class GameEngine {
     this.car.velocity.y *= friction;
 
     // Limit max speed
-    const currentSpeed = Math.sqrt(this.car.velocity.x ** 2 + this.car.velocity.y ** 2);
+    currentSpeed = Math.sqrt(this.car.velocity.x ** 2 + this.car.velocity.y ** 2);
     if (currentSpeed > maxSpeed) {
       this.car.velocity.x = (this.car.velocity.x / currentSpeed) * maxSpeed;
       this.car.velocity.y = (this.car.velocity.y / currentSpeed) * maxSpeed;
@@ -308,20 +331,25 @@ export class GameEngine {
           this.onScoreUpdate(this.score, this.level, this.coinsCollected, this.totalCoinsInLevel);
         }
         
-        // Check if level is complete (70% of coins collected)
-        const completionThreshold = Math.ceil(this.totalCoinsInLevel * 0.7);
-        if (this.coinsCollected >= completionThreshold) {
+        // Check if level is complete (100% of coins collected - auto advance)
+        if (this.coinsCollected >= this.totalCoinsInLevel) {
           this.levelUp();
         }
       }
     });
 
     // Check obstacle collision
-    this.obstacles.forEach(obstacle => {
+    for (const obstacle of this.obstacles) {
       if (this.checkCollision(this.car, obstacle)) {
-        this.gameOver();
+        const progressThreshold = Math.ceil(this.totalCoinsInLevel * 0.7);
+        if (this.coinsCollected == progressThreshold) {
+          this.levelUp();
+        } else {
+          this.gameOver();
+        }
+        return; // Exit after handling collision
       }
-    });
+    }
   }
 
   private levelUp(): void {

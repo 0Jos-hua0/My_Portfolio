@@ -159,7 +159,7 @@ const CertificateCarousel: React.FC = () => {
         
         <div 
           ref={containerRef}
-          className="relative h-72 overflow-x-auto "
+          className="relative h-72 overflow-x-auto"
           style={{
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
@@ -172,7 +172,7 @@ const CertificateCarousel: React.FC = () => {
             }
           </style>
           
-          <div className="flex gap-8 w-max ">
+          <div className="flex gap-8 w-max mt-9">
             {[...certificates, ...certificates].map((cert, index) => (
               <motion.div
                 key={`${cert.id}-${index}`}

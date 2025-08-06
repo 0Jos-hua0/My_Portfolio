@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { GameEngine } from './CarGame';
+import gamebg from '/assets/Gamebg.jpg';  // adjust path as needed
+
 
 interface CarGameProps {
   width?: number;
   height?: number;
 }
 
-const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
+const CarGame: React.FC<CarGameProps> = ({ width = 1000, height = 600 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameEngineRef = useRef<GameEngine | null>(null);
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'gameOver'>('menu');
@@ -19,8 +21,8 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
 
   const cars = [
-    { id: 'car1', name: 'Razor Classic', image: '/assets/Razor.png' },
-    { id: 'car2', name: 'Razor Sport', image: '/assets/Razor1.png' },
+    { id: 'car1', name: 'Razor Sport', image: '/assets/Razor.png' },
+    { id: 'car2', name: 'Razor Classic', image: '/assets/Razor1.png' },
     { id: 'car3', name: 'Razor Elite', image: '/assets/Razor2.png' }
   ];
 
@@ -135,10 +137,11 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center p-4 text-white relative overflow-hidden"
+    style={{ backgroundImage: `url(${gamebg})` }}>
       <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
         {/* Game Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+        <div className="bg-gradient-to-r from-orange-600 to-purple-600 text-white p-4">
           <h1 className="text-3xl font-bold text-center">🏎️ Speed Racer</h1>
           <div className="flex justify-between items-center mt-2 text-sm">
             <div>Score: <span className="font-bold">{score}</span></div>
@@ -146,6 +149,15 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
             <div>Coins: <span className="font-bold">{coinsCollected}/{totalCoins}</span></div>
             <div className="text-sm">High Score: <span className="font-bold">{highScore}</span></div>
           </div>
+          {gameState === 'playing' && (
+            <div className="text-center mt-2 text-xs">
+              {coinsCollected >= Math.ceil(totalCoins * 0.7) ? (
+                <span className="text-green-200">✅ Ready to advance! Collect all coins or hit obstacle to progress</span>
+              ) : (
+                <span className="text-yellow-200">Collect {Math.ceil(totalCoins * 0.7) - coinsCollected} more coins to unlock next level</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Game Canvas */}
@@ -170,8 +182,8 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
                       onClick={() => setSelectedCar(car.id)}
                       className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                         selectedCar === car.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-300 hover:border-gray-400'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-orange-300 hover:border-orange-400'
                       }`}
                     >
                       <div className="flex items-center space-x-4">
@@ -185,7 +197,8 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
                           }}
                         />
                         <div>
-                          <h3 className="font-semibold text-lg">{car.name}</h3>
+                        <h3 className="font-semibold text-lg text-violet-400">{car.name}</h3>
+
                           <p className="text-gray-600 text-sm">Click to select</p>
                         </div>
                       </div>
@@ -219,8 +232,8 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
               <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
                 <h2 className="text-3xl font-bold text-red-600 mb-4">Game Over!</h2>
                 <div className="text-xl mb-4">
-                  <p>Final Score: <span className="font-bold text-blue-600">{score}</span></p>
-                  <p>Level Reached: <span className="font-bold text-purple-600">{level}</span></p>
+                  <p className="text-yellow-600 font-bold mt-2">Final Score: <span className="font-bold text-red-600">{score}</span></p>
+                  <p className="text-yellow-600 font-bold mt-2">Level Reached: <span className="font-bold text-red-600">{level}</span></p>
                   {score === highScore && score > 0 && (
                     <p className="text-yellow-600 font-bold mt-2">🎉 New High Score!</p>
                   )}
@@ -248,7 +261,7 @@ const CarGame: React.FC<CarGameProps> = ({ width = 800, height = 600 }) => {
         {gameState === 'playing' && (
           <div className="bg-gray-100 p-4 text-center">
             <p className="text-sm text-gray-600">
-              <kbd className="px-2 py-1 bg-gray-300 rounded">↑/W</kbd> Accelerate • <kbd className="px-2 py-1 bg-gray-300 rounded">↓/S</kbd> Reverse • <kbd className="px-2 py-1 bg-gray-300 rounded">←/A</kbd> <kbd className="px-2 py-1 bg-gray-300 rounded">→/D</kbd> Turn • Collect 70% coins to advance
+              <kbd className="px-2 py-1 bg-gray-300 rounded">↑/W</kbd> Accelerate • <kbd className="px-2 py-1 bg-gray-300 rounded">↓/S</kbd> Reverse • <kbd className="px-2 py-1 bg-gray-300 rounded">←/A</kbd> <kbd className="px-2 py-1 bg-gray-300 rounded">→/D</kbd> Turn • Collect 70% coins to unlock progression
             </p>
           </div>
         )}
