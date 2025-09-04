@@ -46,11 +46,13 @@ export class GameEngine {
   private coinsCollected: number = 0;
   private totalCoinsInLevel: number = 25;
   private gameSpeed: number = 1;
+  private canAdvanceLevel: boolean = false;
 
   // Callbacks
   public onScoreUpdate: ((score: number, level: number, coinsCollected: number, totalCoins: number) => void) | null = null;
   public onGameOver: ((finalScore: number, finalLevel: number) => void) | null = null;
   public onLevelUp: ((newLevel: number) => void) | null = null;
+  public onCanAdvance: ((canAdvance: boolean) => void) | null = null;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, selectedCarId: string) {
     this.canvas = canvas;
@@ -60,7 +62,7 @@ export class GameEngine {
     this.car = {
       x: canvas.width / 2 - 30,
       y: canvas.height / 2 - 20,
-      width: 65,
+      width: 60,
       height: 40,
       speed: 3,
       image: null,
@@ -85,19 +87,7 @@ export class GameEngine {
       'car3': '/assets/Razor2.png'
     };
     this.car.image.src = carImageMap[this.car.selectedCarId] || '/assets/Razor.png';
-    this.car.image.onload = () => {
-      const targetHeight = 40; // desired car height
-      const aspectRatio = this.car.image.width / this.car.image.height;
-      const targetWidth = targetHeight * aspectRatio;
-  
-      // Update car size to scaled dimensions
-      this.car.width = targetWidth;
-      this.car.height = targetHeight;
-  
-      // (Optional) Centering again after knowing dimensions
-      this.car.x = this.canvas.width / 2 - this.car.width / 2;
-      this.car.y = this.canvas.height / 2 - this.car.height / 2;    
-    };
+
     // Load coin image
     this.coinImage = new Image();
     this.coinImage.src = '/assets/coin.png';
@@ -115,6 +105,7 @@ export class GameEngine {
     this.score = 0;
     this.level = 1;
     this.coinsCollected = 0;
+    this.canAdvanceLevel = false;
     this.coins = [];
     this.obstacles = [];
     this.gameSpeed = 1;
@@ -127,6 +118,11 @@ export class GameEngine {
     this.gameLoop();
   }
 
+  public advanceToNextLevel(): void {
+    if (this.canAdvanceLevel) {
+      this.levelUp();
+    }
+  }
   public stop(): void {
     this.gameRunning = false;
     if (this.animationFrameId) {
@@ -148,7 +144,7 @@ export class GameEngine {
     this.obstacles = [];
     
     // Generate 20-30 coins randomly positioned
-    this.totalCoinsInLevel = 20 + Math.floor(Math.random() * 11); // 20-30 coins
+    this.totalCoinsInLevel = 25 + Math.floor(Math.random() * 11); // 20-30 coins
     
     for (let i = 0; i < this.totalCoinsInLevel; i++) {
       let coinX, coinY;
@@ -327,13 +323,24 @@ export class GameEngine {
         this.coinsCollected++;
         this.score += 10;
         
+        // Check if player can advance to next level (70%+ coins)
+        const requiredCoins = Math.ceil(this.totalCoinsInLevel * 0.7);
+        const newCanAdvance = this.coinsCollected >= requiredCoins;
+        if (newCanAdvance !== this.canAdvanceLevel) {
+          this.canAdvanceLevel = newCanAdvance;
+          if (this.onCanAdvance) {
+            this.onCanAdvance(this.canAdvanceLevel);
+          }
+        }
+        
         if (this.onScoreUpdate) {
           this.onScoreUpdate(this.score, this.level, this.coinsCollected, this.totalCoinsInLevel);
         }
         
-        // Check if level is complete (100% of coins collected - auto advance)
+        // Auto advance if all coins collected (100%)
         if (this.coinsCollected >= this.totalCoinsInLevel) {
           this.levelUp();
+          return;
         }
       }
     });
@@ -341,13 +348,9 @@ export class GameEngine {
     // Check obstacle collision
     for (const obstacle of this.obstacles) {
       if (this.checkCollision(this.car, obstacle)) {
-        const progressThreshold = Math.ceil(this.totalCoinsInLevel * 0.7);
-        if (this.coinsCollected == progressThreshold) {
-          this.levelUp();
-        } else {
-          this.gameOver();
-        }
-        return; // Exit after handling collision
+        // Always game over on collision - player must use button to advance
+        this.gameOver();
+        return;
       }
     }
   }
@@ -355,7 +358,12 @@ export class GameEngine {
   private levelUp(): void {
     this.level++;
     this.coinsCollected = 0;
+    this.canAdvanceLevel = false;
     this.gameSpeed = Math.min(3, 1 + (this.level - 1) * 0.3);
+    
+    if (this.onCanAdvance) {
+      this.onCanAdvance(false);
+    }
     
     if (this.onLevelUp) {
       this.onLevelUp(this.level);

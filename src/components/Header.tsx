@@ -7,7 +7,7 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'about', 'projects', 'game', 'contact'];
+      const sections = ['hero', 'about', 'projects', 'certi', 'game', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -39,14 +39,17 @@ const Header = () => {
   const navItems = [
     { id: 'hero', label: 'Home' },
     { id: 'about', label: 'About' },
+    { id: 'certi', label: 'Certifications' },
     { id: 'projects', label: 'Projects' },
     { id: 'game', label: 'Bored?' },
+    
+
     { id: 'contact', label: 'Contact' }
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-sm z-50 transition-all duration-300">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
         <div 
   className="cursor-pointer hover:opacity-80 active:opacity-70 transition-all duration-300
