@@ -1,5 +1,5 @@
 // src/components/Skills.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
@@ -104,7 +104,7 @@ const Skills = () => {
   }, [inView]);
 
   return (
-    <div className="py-16 bg-gradient-to-b from-purple-900 to-gray-900">
+    <div className="py-16 bg-gradient-to-br from-yellow-600 to-purple-900 min-h-screen">
       <motion.div
         ref={ref}
         initial="hidden"
@@ -113,17 +113,17 @@ const Skills = () => {
         className="text-center mb-16"
       >
         <h2 className="text-4xl sm:text-5xl font-bold relative inline-block">
-          <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+          <span className="relative z-10 text-white drop-shadow-md">
             Technical Expertise
           </span>
           <motion.span
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 0.8, delay: 0.4, ease: "anticipate" }}
-            className="absolute bottom-[-12px] left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-purple-500 transform origin-left"
+            className="absolute bottom-[-12px] left-0 w-full h-1 bg-white transform origin-left"
           />
         </h2>
-        <p className="mt-4 text-yellow-200 max-w-2xl mx-auto">
+        <p className="mt-4 text-white text-opacity-90 max-w-2xl mx-auto">
           Technologies and tools I use to bring ideas to life
         </p>
       </motion.div>
@@ -134,10 +134,10 @@ const Skills = () => {
             <motion.div
               key={index}
               className={`absolute skill-card p-6 w-64 h-80 rounded-2xl cursor-pointer
-                bg-gradient-to-br from-purple-800/90 to-gray-900 backdrop-blur-sm
-                border border-yellow-500/30 shadow-2xl transition-all duration-300
-                ${isSpread ? '' : 'hover:scale-105 hover:shadow-yellow-500/20'}
-                ${activeCategory === index ? 'ring-2 ring-yellow-500/70' : ''}`}
+                bg-white/10 backdrop-blur-md border border-white/20 
+                shadow-lg transition-all duration-300
+                ${isSpread ? '' : 'hover:scale-105 hover:shadow-orange-500/20'}
+                ${activeCategory === index ? 'ring-2 ring-orange-400/70' : ''}`}
               custom={index}
               initial="initial"
               animate={isSpread ? "spread" : "stacked"}
@@ -147,13 +147,14 @@ const Skills = () => {
                 y: isSpread ? -10 : index * 5,
                 scale: isSpread ? 1.05 : 1.05,
                 zIndex: 99,
-                boxShadow: "0 0 30px rgba(234, 179, 8, 0.3)"
+                boxShadow: "0 0 30px rgba(255, 140, 0, 0.3)",
+                backgroundColor: "rgba(255, 255, 255, 0.15)"
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setActiveCategory(activeCategory === index ? null : index)}
             >
               <div className="flex items-center justify-between mb-6">
-                <h4 className="font-bold text-xl text-yellow-300">
+                <h4 className="font-bold text-xl text-white">
                   {skillGroup.category}
                 </h4>
                 <span className="text-2xl">{skillGroup.icon}</span>
@@ -170,16 +171,16 @@ const Skills = () => {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium text-yellow-200 group-hover:text-yellow-400 transition-colors">
+                      <span className="text-sm font-medium text-white group-hover:text-orange-300 transition-colors">
                         {skill.name}
                       </span>
-                      <span className="text-xs text-yellow-600 font-semibold">
+                      <span className="text-xs text-white text-opacity-70 font-semibold">
                         {skill.proficiency}%
                       </span>
                     </div>
-                    <div className="h-2 bg-purple-900/50 rounded-full overflow-hidden">
+                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                       <motion.div 
-                        className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600"
+                        className="h-full bg-gradient-to-r from-orange-400 to-yellow-400"
                         initial={{ width: 0 }}
                         animate={{ width: `${skill.proficiency}%` }}
                         transition={{ duration: 1, delay: 0.5 + (skillIndex * 0.1) }}
@@ -198,7 +199,7 @@ const Skills = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center mt-24 text-yellow-300"
+          className="text-center mt-24 text-white text-opacity-80"
         >
           <p className="text-sm">Click on any category to focus</p>
         </motion.div>
