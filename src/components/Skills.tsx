@@ -58,7 +58,7 @@ const Skills = () => {
 
   const variants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeInOut" } }
   };
 
   const stackVariants = {
@@ -104,7 +104,7 @@ const Skills = () => {
   }, [inView]);
 
   return (
-    <div className="py-16 bg-gradient-to-br from-yellow-600 to-purple-900 min-h-screen">
+    <div className="py-16 bg-gradient-to-br from-orange-500 to-purple-600 min-h-screen">
       <motion.div
         ref={ref}
         initial="hidden"
@@ -114,7 +114,7 @@ const Skills = () => {
       >
         <h2 className="text-4xl sm:text-5xl font-bold relative inline-block">
           <span className="relative z-10 text-white drop-shadow-md">
-            Technical Expertise
+            My Technical Expertise
           </span>
           <motion.span
             initial={{ scaleX: 0 }}
@@ -170,22 +170,9 @@ const Skills = () => {
                     className="block group relative overflow-hidden"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium text-white group-hover:text-orange-300 transition-colors">
-                        {skill.name}
-                      </span>
-                      <span className="text-xs text-white text-opacity-70 font-semibold">
-                        {skill.proficiency}%
-                      </span>
-                    </div>
-                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                      <motion.div 
-                        className="h-full bg-gradient-to-r from-orange-400 to-yellow-400"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.proficiency}%` }}
-                        transition={{ duration: 1, delay: 0.5 + (skillIndex * 0.1) }}
-                      />
-                    </div>
+                    <span className="text-sm font-medium text-white group-hover:text-orange-300 transition-colors">
+                      {skill.name}
+                    </span>
                   </a>
                 ))}
               </div>
@@ -201,7 +188,6 @@ const Skills = () => {
           transition={{ delay: 0.5 }}
           className="text-center mt-24 text-white text-opacity-80"
         >
-          <p className="text-sm">Click on any category to focus</p>
         </motion.div>
       )}
     </div>

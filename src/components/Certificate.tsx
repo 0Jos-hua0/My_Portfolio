@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Pause, Play, Award, Star, Sparkles } from 'lucide-react';
 
@@ -92,50 +92,65 @@ const categoryColors = {
 const CertificateCarousel: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [maxScroll, setMaxScroll] = useState(0);
-  const speed = 0.5; // Reduced speed for smoother animation
+  const speed = 0.5;
 
   const handleDownload = (url: string, title: string) => {
     console.log('Downloading:', title, url);
-    // Actual download implementation would go here
   };
 
-  // Calculate max scroll when component mounts
-  useEffect(() => {
-    if (containerRef.current) {
-      const scrollWidth = containerRef.current.scrollWidth / 2;
-      const containerWidth = containerRef.current.clientWidth;
-      setMaxScroll(scrollWidth - containerWidth);
-    }
-  }, []);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
 
-  // Auto-scroll animation with pause/resume
+  // Callback to pause auto-scroll on user interaction
+  const handleScroll = useCallback(() => {
+    if (!isUserScrolling) {
+      setIsUserScrolling(true);
+      setIsPaused(true);
+    }
+  }, [isUserScrolling]);
+
+  // Set up event listener for user scrolling
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, [handleScroll]);
+
+  // Main animation loop for auto-scrolling
   useEffect(() => {
     let animationFrame: number;
-    let lastTimestamp = 0;
+    const container = containerRef.current;
+    if (!container || isPaused || isUserScrolling) return;
 
-    const animate = (timestamp: number) => {
-      if (!lastTimestamp) lastTimestamp = timestamp;
-      
-      const deltaTime = timestamp - lastTimestamp;
-      lastTimestamp = timestamp;
+    // The width of the first set of cards to scroll before looping back
+    const contentWidth = container.scrollWidth / 2;
 
-      if (!isPaused && containerRef.current && maxScroll > 0) {
-        const newPosition = (scrollPosition + (deltaTime * speed)) % (maxScroll + 1);
-        setScrollPosition(newPosition);
-        containerRef.current.scrollLeft = newPosition;
+    const animate = () => {
+      // Move scroll position by the speed
+      let newScrollPosition = container.scrollLeft + speed;
+
+      // If we've scrolled past the first set of items, loop back
+      if (newScrollPosition >= contentWidth) {
+        newScrollPosition = newScrollPosition - contentWidth;
       }
+      container.scrollLeft = newScrollPosition;
 
       animationFrame = requestAnimationFrame(animate);
     };
 
     animationFrame = requestAnimationFrame(animate);
+
+    // Cleanup function
     return () => cancelAnimationFrame(animationFrame);
-  }, [isPaused, scrollPosition, maxScroll, speed]);
+  }, [isPaused, isUserScrolling, speed]);
 
   const togglePause = () => {
     setIsPaused(!isPaused);
+    // Reset user scroll flag when auto-scroll is resumed
+    if (!isPaused) {
+      setIsUserScrolling(false);
+    }
   };
 
   return (
@@ -148,7 +163,6 @@ const CertificateCarousel: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Fixed header alignment */}
         <div className="flex flex-col items-center mb-12">
           <motion.div 
             className="relative text-center mb-4"
@@ -216,6 +230,7 @@ const CertificateCarousel: React.FC = () => {
             }
           </style>
           
+          {/* Duplicate content to create the infinite loop effect */}
           <div className="flex gap-6 w-max">
             {[...certificates, ...certificates].map((cert, index) => (
               <motion.div
